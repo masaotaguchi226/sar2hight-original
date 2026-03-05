@@ -20,7 +20,7 @@ class SimLoss(nn.Module):
         if mode == 'ssim':
             self.sim_func = SSIM(window_size=11, sigma=1.5, n_channels=1)
         else:
-            raise ValueError('unknown sim loss mode')
+            raise ValueError('未知の類似度損失モード')
     def forward(self, pred, label):
         pred = torch.sigmoid(pred)
         label = torch.sigmoid(label)        
@@ -45,7 +45,7 @@ class RSegLoss(nn.Module):
         elif mode == 'DICECE':
             self.loss_func = DiceCELoss(to_onehot_y=False, softmax=True)
         else:
-            raise ValueError('unknown RSEG loss mode')
+            raise ValueError('未知のRSEG損失モード')
     def forward(self, seg, seg_label):
         return self.loss_func(seg, seg_label) * self.weight
 
@@ -66,7 +66,7 @@ class SegLoss(nn.Module):
         elif mode == 'DICECE':
             self.loss_func = DiceCELoss(to_onehot_y=False, softmax=True)
         else:
-            raise ValueError('unknown rec loss mode')
+            raise ValueError('未知の再構成損失モード')
     def forward(self, seg, seg_label):
         return self.loss_func(seg, seg_label) * self.weight
 
@@ -79,7 +79,7 @@ class IOULoss(nn.Module):
         elif mode == 'mae':
             self.loss_func = nn.L1Loss()
         else:
-            raise ValueError('unknown sim loss mode')
+            raise ValueError('未知のIOU損失モード')
     def forward(self, rseg, seg):
         return self.loss_func(rseg, seg) * self.weight
 
@@ -106,7 +106,7 @@ class MAPELoss(nn.Module):
         if mode == 'mae':
             self.loss_func = nn.L1Loss()
         else:
-            raise ValueError('unknown sim loss mode')
+            raise ValueError('未知のMAPE損失モード')
     def forward(self,pred, target):
         return self.loss_func(pred, target) * self.weight
 
@@ -133,7 +133,7 @@ class RecLoss(nn.Module):
         elif mode == 'rmse_nonzero_log':
             self.loss_func = RMSE_NONZERO_log()
         else:
-            raise ValueError('unknown rec loss mode')
+            raise ValueError('未知の再構成損失モード')
     def forward(self, pred, label):
         return self.loss_func(pred, label) * self.weight
     
