@@ -11,12 +11,12 @@ warnings.filterwarnings('ignore')
 
 def main(args):
     # --------------------------------------------------------------------------
-    # loads configs
+    # 設定ファイルの読み込み
     with open(args.config_file, 'r') as f:
         configs = yaml.load(f, Loader=yaml.Loader)
     configs = OmegaConf.create(configs)
 
-    # loads data splits and stats    
+    # データ分割の読み込み
     df: pd.DataFrame = pd.read_csv(args.test_df)
         
     if args.val:
@@ -25,20 +25,20 @@ def main(args):
     
     else:
         val_list = df['fname'].tolist()
-    print('Test data size', len(val_list))
+    print('テストデータ数', len(val_list))
 
     # --------------------------------------------------------------------------
-    # predicting test data
+    # テストデータの推論
     exp_dir = opj(args.exp_root)
     data_dir = args.data_root
     output_dir = opj(args.output_root)
 
     print('-' * 100)
-    print('Predicting ...\n')
-    print(f'- Data Dir  : {data_dir}')
-    print(f'- Exp Dir   : {exp_dir}')
-    print(f'- Out Dir   : {output_dir}')
-    print(f'- Configs   : {args.config_file}')
+    print('推論中 ...\n')
+    print(f'- データディレクトリ  : {data_dir}')
+    print(f'- 実験ディレクトリ   : {exp_dir}')
+    print(f'- 出力ディレクトリ   : {output_dir}')
+    print(f'- 設定内容   : {args.config_file}')
 
     model_paths = opj(exp_dir, 'model.pth')
     predictor = BHEPredictor(
@@ -51,13 +51,13 @@ def main(args):
     return
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Predicting')
-    parser.add_argument( "--test-df", type=str, default='<PATH TO TEST CSV LIST>', help="path to test csv datalist",)
-    parser.add_argument('--data_root',      type=str, default='<PATH TO TEST DATA>', help='dir path of test data')
-    parser.add_argument('--exp_root',       type=str, default='<EXPERIMENT CKPT FOLDER>', help='root dir of experiments')
-    parser.add_argument('--output_root',    type=str, default='<OUTPUT PREDICTION FOLDER>', help='root dir of outputs')
-    parser.add_argument('--config_file',    type=str, default ='<CONFIG YAML>', help='yaml path of configs')
-    parser.add_argument('--val',     action='store_true', help='if validatin accuracy else test accuracy')
+    parser = argparse.ArgumentParser(description='推論')
+    parser.add_argument( "--test-df", type=str, default='<テストCSVリストのパス>', help="テストCSVデータリストのパス",)
+    parser.add_argument('--data_root',      type=str, default='<テストデータのパス>', help='テストデータのディレクトリパス')
+    parser.add_argument('--exp_root',       type=str, default='<実験チェックポイントフォルダ>', help='実験ルートディレクトリ')
+    parser.add_argument('--output_root',    type=str, default='<予測結果出力フォルダ>', help='出力ルートディレクトリ')
+    parser.add_argument('--config_file',    type=str, default ='<設定YAML>', help='設定のYAMLファイルパス')
+    parser.add_argument('--val',     action='store_true', help='検証精度を評価する場合に指定（未指定の場合はテスト精度）')
     args = parser.parse_args()
     check_predict_args(args)
     main(args)

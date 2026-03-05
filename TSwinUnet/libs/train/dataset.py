@@ -42,9 +42,9 @@ class BHEDataset(Dataset):
 
     def _load_data(self, subject_path):
         subject = os.path.basename(subject_path)
-        # loads label data
+        # ラベルデータの読み込み
         label_path = opj(self.data_dir, 'LABEL_1m', subject_path)
-        assert os.path.isfile(label_path), f'label {label_path} is not exist'
+        assert os.path.isfile(label_path), f'ラベル {label_path} が存在しません'
         label = read_raster(label_path, True, GT_SHAPE)
         label = imread(label_path)
         label = np.nan_to_num(label)
@@ -62,7 +62,7 @@ class BHEDataset(Dataset):
         label = np.expand_dims(label, axis=0)
         label = np.expand_dims(label, axis=-1)
 
-        # loads S1 and S2 features
+        # S1とS2特徴量の読み込み
         feature_list, mask = [], []
         for month in self.months_list:
             file_name = '%s_%02d.tif' % (str.split(subject_path, '.')[0], month)
@@ -86,7 +86,7 @@ class BHEDataset(Dataset):
         subject_path = self.data_list[index]
         label, target_seg, feature, mask = self._load_data(subject_path)
         
-        # NO FLIP only channel drop
+        # フリップなし、チャンネルドロップのみ
         if self.augment:
             data = {'image': feature, 'mask1': label, 'mask2': target_seg}
             aug_data = self.transform(**data)

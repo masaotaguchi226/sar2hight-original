@@ -55,7 +55,7 @@ class BHEPredictor(object):
             seg.save(output_path, format='TIFF', save_all=True)
     
     def _load_data(self, data_dir, subject):
-        # loads S1 and S2 features
+        # S1とS2特徴量の読み込み
         feature_list, mask = [], []
         for month in self.months_list:
             file_name = '%s_%02d.tif' % (str.split(subject, '.')[0], month)

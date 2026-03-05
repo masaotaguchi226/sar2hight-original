@@ -21,7 +21,7 @@ class PytorchTrainer(BaseTrainer):
         prev_best_epoch = 0
         best_val_rmse = np.inf
         start_time = time.time()
-        basic_msg = '- Best Val MSE:{:.4f} at Epoch:{}'
+        basic_msg = '- 最良の検証MSE:{:.4f}、エポック:{}'
 
         for epoch in range(self.start_epoch, self.epochs + 1):
             gc.collect()
@@ -35,16 +35,16 @@ class PytorchTrainer(BaseTrainer):
                 prev_best_epoch = epoch
                 best_val_rmse = val_metrics['rmse']
                 best_msg = basic_msg.format(best_val_rmse, epoch)
-                print('>>> Best Val Epoch - Lowest RMSE - Save Model <<<')
+                print('>>> 最良の検証エポック - 最小RMSE - モデルを保存 <<<')
                 self._save_model()
                 self._save_checkpoint(epoch)
 
-            # write logs
+            # ログの書き込み
             self._save_logs(epoch, train_metrics, val_metrics)
 
             if self.early_stop is not None:
                 if epoch - prev_best_epoch >= self.early_stop:
-                    print('- Early Stopping Since Last Best Val Epoch')
+                    print('- 最良の検証エポックから改善なし：早期終了')
                     break
             gc.collect()
             torch.cuda.empty_cache()
@@ -52,17 +52,17 @@ class PytorchTrainer(BaseTrainer):
         print(best_msg)
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-        print('- Training time {}'.format(total_time_str))
+        print('- 学習時間 {}'.format(total_time_str))
 
     def _train_epoch(self, epoch, loader):
         self.model.train()
         self.optimizer.zero_grad()
 
-        header = 'Train Epoch:[{}]'.format(epoch)
+        header = '学習 エポック:[{}]'.format(epoch)
         logger = MetricLogger(header, self.print_freq)
 
         data_iter = logger.log_every(loader)
-        print('Learning rate', self.scheduler.optimizer.param_groups[0]['lr'])
+        print('学習率', self.scheduler.optimizer.param_groups[0]['lr'])
         for step, batch_data in enumerate(data_iter):
             with autocast():
                 feature, mask, label, target_seg = [d.to(self.device) for d in batch_data]
@@ -108,7 +108,7 @@ class PytorchTrainer(BaseTrainer):
     def _val_epoch(self, epoch, loader):
         self.model.eval()
 
-        header = ' Val  Epoch RMSE+NONZERORMSE+IOU:[{}]'.format(epoch)
+        header = ' 検証 エポック RMSE+NONZERORMSE+IOU:[{}]'.format(epoch)
         logger = MetricLogger(header, self.print_freq)
 
         data_iter = logger.log_every(loader)

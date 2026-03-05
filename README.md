@@ -1,57 +1,57 @@
-## [How High are We? Large-Scale Building Height Estimation Using Sentinel-1 Sar and Sentinel-2 Msi Time Series](https://www.sciencedirect.com/science/article/pii/S0034425724005820)
+## [大規模建物高さ推定：Sentinel-1 SARとSentinel-2 MSI時系列を活用](https://www.sciencedirect.com/science/article/pii/S0034425724005820)
 
-We propose T-SwinUNet, an advanced DL model for large-scale building height estimation leveraging Sentinel-1 SAR and Sentinel-2 multispectral time series. The model was trained and evaluated on data from the Netherlands, Switzerland, Estonia, and Germany, and its generalizability is evaluated on an out-of-distribution (OOD) test set from ten additional cities from other European countries. T-SwinUNet predicts building height with a Root Mean Square Error (RMSE) of 1.89 m, outperforming state-of-the-art models at 10 m spatial resolution. Its strong generalization to the OOD test set (RMSE of 3.2 m) underscores its potential for low-cost building height estimation across Europe, with future scalability to other regions. Furthermore, the assessment at 100 m resolution reveals that T-SwinUNet (0.29 m RMSE, 0.75 R^2) also outperformed the global building height product GHSL-Built-H R2023A product(0.56 m RMSE and 0.37 R^2). 
+本研究では、Sentinel-1 SARおよびSentinel-2 多波長画像の時系列データを活用した大規模建物高さ推定のための高度な深層学習モデル **T-SwinUNet** を提案します。このモデルは、オランダ・スイス・エストニア・ドイツのデータで学習・評価され、その汎化性能は他のヨーロッパ諸国10都市からなる分布外（OOD）テストセットで検証されています。T-SwinUNetは、10m空間解像度において二乗平均平方根誤差（RMSE）1.89 mで建物高さを予測し、最先端モデルを上回る性能を示しています。OODテストセットでの高い汎化性能（RMSE 3.2 m）は、ヨーロッパ全域での低コスト建物高さ推定、および将来的な他地域への展開可能性を示しています。さらに、100m解像度での評価では、T-SwinUNet（RMSE 0.29 m、R² 0.75）がグローバル建物高さプロダクトGHSL-Built-H R2023A（RMSE 0.56 m、R² 0.37）をも上回る性能を示しました。
 
-<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/dataset_location.png" alt="Sites" width="500" height="400">
+<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/dataset_location.png" alt="サイト" width="500" height="400">
 
-### 🎉 Manuscript
+### 🎉 論文
 Remote Sensing of Environment - https://www.sciencedirect.com/science/article/pii/S0034425724005820
 
-Also at  👉 [EGU 2024](https://meetingorganizer.copernicus.org/EGU24/EGU24-4493.html) & 
+関連発表：👉 [EGU 2024](https://meetingorganizer.copernicus.org/EGU24/EGU24-4493.html) & 
          👉 [ESA URBIS 2024](https://urbis24.esa.int/urbis24-agenda/index9f7c.html?page=browseSessions&form_session=71&presentations=hide)
 
 
-### 🛠️ Setup
-create the conda environment via
+### 🛠️ セットアップ
+以下のコマンドでconda環境を作成します。
 
 ```bash
 conda env create -f environment.yml
 ```
 
-### 🏋️‍♂️ Training
-Run the python script `train.py` as follows
+### 🏋️‍♂️ 学習
+以下のように `train.py` スクリプトを実行します。
 
 ```bash
 python train.py \
-    --exp_root 'CKPT PATH' \
+    --exp_root 'チェックポイント保存パス' \
     --config_file './configs/tswin_unet/exp3.yaml' \
-    --train-df "TRAIN DATA LIST CSV" \
-    --data_root "TRAIN DATA PATH"
+    --train-df "学習データリストCSV" \
+    --data_root "学習データパス"
 ```
-###  🚀 Inference
-Run the python script `inference.py` as follows
+###  🚀 推論
+以下のように `predict.py` スクリプトを実行します。
 ```bash
 python predict.py \
     --config_file './configs/tswin_unet/exp3.yaml' \
-    --output_root 'PREDICTION OUTPUT PATH' \
-    --exp_root 'CKPT PATH' \
-    --test-df "TEST DATA LIST CSV" \
-    --data_root "TEST DATA PATH"
+    --output_root '予測結果出力パス' \
+    --exp_root 'チェックポイントパス' \
+    --test-df "テストデータリストCSV" \
+    --data_root "テストデータパス"
 ```
 
-### 🎉 Dataset
-Dataset : [M4Heights ](https://huggingface.co/datasets/Rituxx96x/M4Heights)
-Please note that this is not the exact dataset used in the training. However, M4Heights contains the needed Sentinel-1, Sentinel-2 time series and the references for three out of four countries used in this work. We hope the dataset is useful for the task. Please check the dataset instructions before use, and can always contact us for more details.
+### 🎉 データセット
+データセット：[M4Heights](https://huggingface.co/datasets/Rituxx96x/M4Heights)
+このデータセットは学習で使用した実際のデータとは異なりますが、M4Heightsには本研究で使用した4か国のうち3か国分のSentinel-1・Sentinel-2時系列データおよびリファレンスが含まれています。タスクに有用なデータセットとなっています。使用前にデータセットの説明をご確認ください。詳細についてはお気軽にお問い合わせください。
 
-### 📈 Results
+### 📈 結果
 
-<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/Quant.jpg" alt="Sites" width="900" height="145">
-<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/COR.jpg" alt="Sites" width="680" height="350">
-<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/GEE_vis.jpg" alt="Sites" width="900" height="450">
+<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/Quant.jpg" alt="定量評価" width="900" height="145">
+<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/COR.jpg" alt="相関" width="680" height="350">
+<img src="https://github.com/RituYadav92/Large-Scale-Building-Height-Estimation/blob/main/TSwinUnet/assets/figures/GEE_vis.jpg" alt="GEE可視化" width="900" height="450">
 
-## 🎓 Citation
+## 🎓 引用
 
-Please cite our paper:
+本論文を引用する際は以下をご使用ください：
 
 ```bibtex
 @article{yadav2025high,
@@ -65,5 +65,5 @@ Please cite our paper:
 }
 ```
 
-### 👋 Contact Info.:
-Ritu Yadav (email: er.ritu92@gmail.com)
+### 👋 連絡先
+Ritu Yadav（メール：er.ritu92@gmail.com）

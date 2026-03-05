@@ -11,7 +11,7 @@ class BaseTrainer(object):
 
     def __init__(self, configs, exp_dir, resume=False, label_norm=False):
 
-        # creates dirs for saving outputs
+        # 出力保存用ディレクトリの作成
         self.configs    = configs
         self.exp_dir    = exp_dir
         self.ckpts_dir  = os.path.join(self.exp_dir, 'ckpts')
@@ -22,7 +22,7 @@ class BaseTrainer(object):
         if os.path.isfile(self.logs_path) and (not resume):
             os.remove(self.logs_path)
 
-        # trainer parameters
+        # トレーナーのパラメータ
         self.start_epoch = 1
         self.epochs      = configs.trainer.epochs
         self.ckpt_freq   = configs.trainer.ckpt_freq
@@ -31,11 +31,11 @@ class BaseTrainer(object):
         self.device      = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.early_stop  = configs.trainer.get('early_stop', None)
 
-        # instantiates model
+        # モデルのインスタンス化
         self.model = define_model(configs.model)
         self.model = self.model.to(self.device)
 
-        # instantiates reconstructrion loss
+        # 再構成損失のインスタンス化
         rec_kwargs = configs.loss.get('rec', None)
         self.rec_loss_func = None
         if rec_kwargs is not None:
@@ -60,20 +60,20 @@ class BaseTrainer(object):
             self.iou_loss_func = IOULoss(**iou_kwargs)
             self.iou_loss_func.to(self.device)
 
-        # instantiates similarity loss
+        # 類似度損失のインスタンス化
         sim_kwargs = configs.loss.get('sim', None)
         self.sim_loss_func = None
         if sim_kwargs is not None:
             self.sim_loss_func = SimLoss(**sim_kwargs)
             self.sim_loss_func.to(self.device)
 
-        # instantiates optimizer
+        # オプティマイザのインスタンス化
         if configs.optimizer.mode == 'adamw':
             optimizer = torch.optim.AdamW
         elif configs.optimizer.mode == 'adam':
             optimizer = torch.optim.Adam
         else:
-            raise ValueError('unknown optimizer mode')
+            raise ValueError('未知のオプティマイザモード')
 
         lr           = configs.optimizer.lr
         betas        = configs.optimizer.betas
@@ -84,7 +84,7 @@ class BaseTrainer(object):
             amsgrad=amsgrad, weight_decay=weight_decay
         )
 
-        # instantiates scheduler
+        # スケジューラのインスタンス化
         min_lr = configs.scheduler.min_lr
         warmup = configs.scheduler.warmup
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor= 0.5, patience=15, verbose=False)
@@ -94,7 +94,7 @@ class BaseTrainer(object):
         if not resume:
             return
 
-        # find checkpoint from ckpt_dir
+        # チェックポイントディレクトリからチェックポイントを検索
         ckpt_files = os.listdir(self.ckpts_dir)
         ckpt_files = [f for f in ckpt_files if f.startswith('ckpt')]
         if len(ckpt_files) > 0:
@@ -102,18 +102,18 @@ class BaseTrainer(object):
             ckpt_file = ckpt_files[-1]
             ckpt_path = os.path.join(self.ckpts_dir, ckpt_file)
         else:
-            print('>>> No checkpoint was found, ignore', '\n')
+            print('>>> チェックポイントが見つかりません、スキップします', '\n')
             return
 
         try:
-            print('>>> Resume checkpoint from:', ckpt_path, '\n')
+            print('>>> チェックポイントから再開:', ckpt_path, '\n')
             checkpoint = torch.load(ckpt_path, map_location='cpu')
             self.start_epoch = checkpoint['epoch'] + 1
             self.model.load_state_dict(checkpoint['model'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             self.optimizer.param_groups[0]['lr'] = 1e-4
         except Exception:
-            print('>>> Faild to resume checkpoint')
+            print('>>> チェックポイントの再開に失敗しました')
 
     def _save_checkpoint(self, epoch):
         ckpt_file = f'ckpt-{epoch:06d}.ckpt'
